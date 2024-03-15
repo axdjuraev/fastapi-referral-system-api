@@ -55,7 +55,7 @@ async def new_uow(uowf):
         yield uow
 
 
-def init_dependencies(app: FastAPI):
+async def init_dependencies(app: FastAPI):
     settings = Settings()
     engine = create_async_engine(settings.db_connection_string)
     session_maker = sessionmaker(
@@ -79,4 +79,3 @@ def init_dependencies(app: FastAPI):
     app.dependency_overrides[api_types._CodeGenerator] = lambda: code_generator
     app.dependency_overrides[api_types.DepStateAuth] = auth_dependency
     app.dependency_overrides[api_types.DepActiveUser] = get_active_user
-    asyncio.create_task(create_models(engine, Base))
