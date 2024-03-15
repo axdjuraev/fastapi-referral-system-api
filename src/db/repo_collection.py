@@ -4,4 +4,5 @@ from src.db import repository as repo
 
 class RepoCollection(BaseRepoCollector):
     users: repo.UsersRepository
-    refferal_code: repo.RefferalCodeRepository
+    referral_code: repo.RefferalCodeRepository
+    otp_code: repo.OTPCodeRepository

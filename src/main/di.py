@@ -14,6 +14,9 @@ from src.api import types as api_types
 from src.db.repo_collection import RepoCollection
 from src.settings import Settings
 from src.utils.auth_system import AuthSystem
+from src.utils.notification_system import EmailSystem
+from src.utils.message_system import MessageSystem
+from src.utils.code_generator import SimpleCodeGenerator
 
 
 OAUTH2_SCHEME = OAuth2PasswordBearer(tokenUrl="api/v1/auth/login")
@@ -47,10 +50,6 @@ def get_active_user(request: Request):
     return request.state.user
 
 
-def new_auth_system(auth_system):
-    return auth_system
-
-
 def init_dependencies(app: FastAPI):
     settings = Settings()
     engine = create_async_engine(settings.db_connection_string)
@@ -60,14 +59,18 @@ def init_dependencies(app: FastAPI):
         expire_on_commit=False,
     )
     auth_system = AuthSystem(settings)
+    email_system = EmailSystem(settings)
+    message_system = MessageSystem(email_system)
+    code_generator = SimpleCodeGenerator()
+
     app.dependency_overrides[DUOW] = AsyncUOWFactory(
         repo=RepoCollection,
         session_maker=session_maker,  # type: ignore
     )
-    app.dependency_overrides[api_types.DepAuthSystem] = partial(
-        new_auth_system,
-        auth_system,
-    )
+    app.dependency_overrides[api_types.TMessageSystem] = lambda: message_system
+    app.dependency_overrides[api_types.DepAuthSystem] = lambda: auth_system
+    app.dependency_overrides[api_types._EmailSystem] = lambda: email_system
+    app.dependency_overrides[api_types._CodeGenerator] = lambda: code_generator
     app.dependency_overrides[api_types.DepStateAuth] = auth_dependency
     app.dependency_overrides[api_types.DepActiveUser] = get_active_user
     asyncio.create_task(create_models(engine, Base))

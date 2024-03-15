@@ -7,7 +7,7 @@ class Users(BaseModel):
     last_name: str
     email: str
     password_hash: str
-    referral_code: Optional[str] = None
+    referral_code_id: Optional[str] = None
 
 
 class OUsers(Users):

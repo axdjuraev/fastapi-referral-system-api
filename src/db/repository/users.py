@@ -11,3 +11,10 @@ class UsersRepository(BaseRepository[Model, Schema, OSchema]):
                 (self.Model.email == email),
             )
         )
+
+    async def all_by_referral(self, id):
+        return await self.all(
+            filters=(
+                (self.Model.referral_code_id == id),
+            )
+        )

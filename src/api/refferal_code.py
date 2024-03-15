@@ -1,9 +1,10 @@
-import random
 from datetime import datetime
+from pydantic import parse_obj_as
 
-from src.api.types import TUOW, ActiveUser, StateAuth
+from src.api.schemas.referral_code import ReferralsSchemas
+from src.api.types import TUOW, ActiveUser, StateAuth, CodeGenerator
 from src.api.schemas import ReferralCodeSchemas
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Path
 
 
 router = APIRouter(dependencies=[StateAuth])
@@ -12,9 +13,9 @@ router = APIRouter(dependencies=[StateAuth])
 @router.get("/", response_model=list[ReferralCodeSchemas])
 async def get_all(uow: TUOW):
     """
-    Get all refferal codes
+    Get all referral codes
     """
-    return await uow.repo.refferal_code.all()
+    return await uow.repo.referral_code.all()
 
 
 @router.post("/", status_code=201)
@@ -23,22 +24,23 @@ async def create(
     *,
     uow: TUOW,
     auth: ActiveUser,
+    code_generator: CodeGenerator,
 ):
     """
-    Create refferal code
+    Create referral code
     """
-    active_ones = await uow.repo.refferal_code.all_active(date=datetime.now())
+    active_ones = await uow.repo.referral_code.all_active(date=datetime.now())
 
     if active_ones:
         raise HTTPException(
             status_code=400,
-            detail="Found active refferal code",
+            detail="Found active referral code",
         )
 
-    code = str(random.randint(100000, 999999))
+    code = code_generator.generate_referral_code()
 
-    res = await uow.repo.refferal_code.add(
-        uow.repo.refferal_code.Schema(
+    res = await uow.repo.referral_code.add(
+        uow.repo.referral_code.Schema(
             code=code,
             user_id=auth.id,
             expires_at=expires_at,
@@ -51,7 +53,16 @@ async def create(
 @router.delete("/", status_code=204)
 async def delete(id: int, uow: TUOW):
     """
-    Delete refferal code
+    Delete referral code
     """
-    await uow.repo.refferal_code.delete(id)
+    await uow.repo.referral_code.delete(id)
     return {"message": "deleted"}
+
+
+@router.get("/referrals/{id}")
+async def get_referrals(*, id: int = Path(..., title='ReferalCodeID'), uow: TUOW):
+    """
+    Get referrals list by referral-code-id
+    """
+    referrals = await uow.repo.users.all_by_referral(id)
+    return parse_obj_as(list[ReferralsSchemas], referrals)
