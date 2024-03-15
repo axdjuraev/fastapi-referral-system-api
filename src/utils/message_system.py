@@ -57,3 +57,12 @@ class MessageSystem:
                 "code": code
             }
         )
+
+    async def send_referral_code(self, receiver: str, code: str):
+        return await self._send_template(
+            template_name='referral-code.html',
+            receiver=receiver,
+            data={
+                "code": code
+            }
+        )
