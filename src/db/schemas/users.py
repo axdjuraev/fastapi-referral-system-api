@@ -1,3 +1,4 @@
+from typing import Optional
 from .base import BaseModel
 
 
@@ -6,6 +7,7 @@ class Users(BaseModel):
     last_name: str
     email: str
     password_hash: str
+    referral_code: Optional[str] = None
 
 
 class OUsers(Users):

@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import EmailStr
 from fastapi.security import OAuth2PasswordRequestForm
 from .base import BaseModel
@@ -13,6 +14,7 @@ class LoginInfoSchemas(BaseModel):
 
 
 class RegistraionSchemas(LoginInfoSchemas):
+    referral_code: Optional[str] = None
     password: str
 
 
