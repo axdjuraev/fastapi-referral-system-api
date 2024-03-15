@@ -1,12 +1,12 @@
 __all__ = [
     'Users',
     'OUsers',
-    'RefferalCode',
-    'ORefferalCode',
+    'ReferralCode',
+    'OReferralCode',
     'OTPCode',
 ]
 
 
 from .users import Users, OUsers
-from .referral_code import RefferalCode, ORefferalCode
+from .referral_code import ReferralCode, OReferralCode
 from .otp import OTPCode

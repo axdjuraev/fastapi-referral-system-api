@@ -47,7 +47,7 @@ async def register(
             detail="User with this email already exists",
         )
 
-    referal_code_id = None
+    referral_code_id = None
 
     if data.referral_code is not None:
         ref = await uow.repo.referral_code.get_by_code(data.referral_code)
@@ -64,7 +64,7 @@ async def register(
                 detail="Referral code expired",
             )
 
-        referal_code_id = ref.id
+        referral_code_id = ref.id
 
     password_hash = auth_system.get_password_hash(data.password)
     await uow.repo.users.add(
@@ -73,7 +73,7 @@ async def register(
             last_name=data.last_name,
             email=data.email,
             password_hash=password_hash,
-            referral_code_id=referal_code_id,
+            referral_code_id=referral_code_id,
         )
     )
 

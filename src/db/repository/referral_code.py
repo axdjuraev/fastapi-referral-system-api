@@ -1,11 +1,11 @@
 from datetime import datetime
-from src.db.schemas import RefferalCode as Schema
-from src.db.schemas import ORefferalCode as OSchema
+from src.db.schemas import ReferralCode as Schema
+from src.db.schemas import OReferralCode as OSchema
 from src.db.models import ReferralCode as Model
 from axsqlalchemy.repository import BaseRepository
 
 
-class RefferalCodeRepository(BaseRepository[Model, Schema, OSchema]):
+class ReferralCodeRepository(BaseRepository[Model, Schema, OSchema]):
     async def all_active(self, date: datetime) -> list[OSchema]:
         return await self.all(
             filters=(

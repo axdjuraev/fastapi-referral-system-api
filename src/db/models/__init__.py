@@ -6,5 +6,5 @@ __all__ = [
 
 
 from .users import Users as UsersModel
-from .refferal_code import ReferralCode
+from .referral_code import ReferralCode
 from .otp import OtpCode as OTPCode

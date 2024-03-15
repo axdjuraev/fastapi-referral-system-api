@@ -3,7 +3,7 @@ from typing import Optional
 from .base import BaseModel
 
 
-class RefferalCode(BaseModel):
+class ReferralCode(BaseModel):
     code: str
     expires_at: datetime
     user_id: int
@@ -16,5 +16,5 @@ class RefferalCode(BaseModel):
         return (self.expires_at - date).seconds <= 0
 
 
-class ORefferalCode(RefferalCode):
+class OReferralCode(ReferralCode):
     id: int

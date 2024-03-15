@@ -10,7 +10,7 @@ def init_routers(app: FastAPI):
         tags=["auth"],
     )
     app.include_router(
-        api.refferal_code_router,
+        api.referral_code_router,
         prefix="/api/v1/referral-code",
         tags=["referral-code"],
     )

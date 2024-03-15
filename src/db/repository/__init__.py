@@ -1,10 +1,10 @@
 __all__ = [
     'UsersRepository',
-    'RefferalCodeRepository',
+    'ReferralCodeRepository',
     'OTPCodeRepository',
 ]
 
 
 from .users import UsersRepository
-from .refferal_code import RefferalCodeRepository
+from .referral_code import ReferralCodeRepository
 from .otp import OTPCodeRepository

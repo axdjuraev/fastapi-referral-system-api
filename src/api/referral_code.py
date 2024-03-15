@@ -73,7 +73,7 @@ async def delete(id: int, uow: TUOW):
 
 
 @router.get("/referrals/{id}")
-async def get_referrals(*, id: int = Path(..., title='ReferalCodeID'), uow: TUOW):
+async def get_referrals(*, id: int = Path(..., title='ReferralCodeID'), uow: TUOW):
     """
     Get referrals list by referral-code-id
     """
