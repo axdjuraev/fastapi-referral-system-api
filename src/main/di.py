@@ -50,6 +50,11 @@ def get_active_user(request: Request):
     return request.state.user
 
 
+async def new_uow(uowf):
+    async with uowf() as uow:
+        yield uow
+
+
 def init_dependencies(app: FastAPI):
     settings = Settings()
     engine = create_async_engine(settings.db_connection_string)
@@ -62,11 +67,12 @@ def init_dependencies(app: FastAPI):
     email_system = EmailSystem(settings)
     message_system = MessageSystem(email_system)
     code_generator = SimpleCodeGenerator()
-
-    app.dependency_overrides[DUOW] = AsyncUOWFactory(
+    uowf = AsyncUOWFactory(
         repo=RepoCollection,
         session_maker=session_maker,  # type: ignore
     )
+
+    app.dependency_overrides[DUOW] = partial(new_uow, uowf)
     app.dependency_overrides[api_types.TMessageSystem] = lambda: message_system
     app.dependency_overrides[api_types.DepAuthSystem] = lambda: auth_system
     app.dependency_overrides[api_types._EmailSystem] = lambda: email_system

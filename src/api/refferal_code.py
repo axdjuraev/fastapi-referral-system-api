@@ -1,8 +1,9 @@
 from datetime import datetime
+from fastapi.params import Param
 from pydantic import parse_obj_as
 
 from src.api.schemas.referral_code import ReferralsSchemas
-from src.api.types import TUOW, ActiveUser, StateAuth, CodeGenerator
+from src.api.types import TUOW, ActiveUser, MessageSystem, StateAuth, CodeGenerator
 from src.api.schemas import ReferralCodeSchemas
 from fastapi import APIRouter, HTTPException, Path
 
@@ -21,9 +22,17 @@ async def get_all(uow: TUOW):
 @router.post("/", status_code=201)
 async def create(
     expires_at: datetime,
+    emailRequest: bool = Param(  # type: ignore
+        True,
+        description=(
+            "возможность получения реферального "
+            "кода по email адресу реферера"
+        )
+    ),
     *,
     uow: TUOW,
     auth: ActiveUser,
+    message_system: MessageSystem,
     code_generator: CodeGenerator,
 ):
     """
@@ -47,10 +56,14 @@ async def create(
             is_active=True,
         )
     )
+
+    if emailRequest:
+        await message_system.send_referral_code(auth.email, code)
+
     return ReferralCodeSchemas(**res.dict())
 
 
-@router.delete("/", status_code=204)
+@router.delete("/", status_code=200)
 async def delete(id: int, uow: TUOW):
     """
     Delete referral code
