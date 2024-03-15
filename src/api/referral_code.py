@@ -12,11 +12,11 @@ router = APIRouter(dependencies=[StateAuth])
 
 
 @router.get("/", response_model=list[ReferralCodeSchemas])
-async def get_all(uow: TUOW):
+async def get_all(uow: TUOW, auth: ActiveUser):
     """
     Get all referral codes
     """
-    return await uow.repo.referral_code.all()
+    return await uow.repo.referral_code.all_by_user(auth.id)
 
 
 @router.post("/", status_code=201)
@@ -38,7 +38,10 @@ async def create(
     """
     Create referral code
     """
-    active_ones = await uow.repo.referral_code.all_active(date=datetime.now())
+    active_ones = await uow.repo.referral_code.all_active_by_user(
+        user_id=auth.id,
+        date=datetime.now(),
+    )
 
     if active_ones:
         raise HTTPException(
@@ -64,10 +67,21 @@ async def create(
 
 
 @router.delete("/", status_code=200)
-async def delete(id: int, uow: TUOW):
+async def delete(id: str, uow: TUOW, auth: ActiveUser):
     """
     Delete referral code
     """
+    ref = await uow.repo.referral_code.get(id)
+
+    if (
+        ref is None
+        or ref.user_id != auth.id
+    ):
+        raise HTTPException(
+            status_code=404,
+            detail="Referral code not found!",
+        )
+
     await uow.repo.referral_code.delete(id)
     return {"message": "deleted"}
 
