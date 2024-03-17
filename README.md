@@ -20,6 +20,45 @@ RESTful API сервис для реферальной системы
 cp .env.example .env
 ```
 
+### Usage
+
+1. Для регистрации пользователя необходимо сначала 
+отправить запрос POST на адрес `/api/v1/auth/send-validation-code` с телом запроса
+что бы получить OTP код для валидации.
+
+```
+POST http://localhost:8000/api/v1/auth/send-validation-code/user@examle.com
+```
+
+2. После получения кода, пользователь должен отправить запрос POST
+на адрес `/api/v1/auth/register` с параметром otp и с телом запроса:
+
+```
+POST http://localhost:8000/api/v1/auth/register?otp=123456
+
+{
+  "first_name": "string",
+  "last_name": "string",
+  "email": "user@example.com",
+  "referral_code": "string",
+  "password": "string"
+}
+```
+
+3. После регистрации пользователя должен получить JWT токен для входа:
+
+```
+POST http://localhost:8000/api/v1/auth/login
+
+{
+  "username": "user@example.com",
+  "password": "****"
+}
+```
+
+4. ...
+
+
 ### Quick start
 
 Установка зависимостей:
